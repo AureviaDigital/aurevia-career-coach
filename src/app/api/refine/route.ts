@@ -57,7 +57,7 @@ export async function POST(request: NextRequest) {
       interviewQuestions: "Interview Questions",
     };
 
-    const sectionName = sectionNames[outputType];
+    const sectionName = sectionNames[outputType as OutputType];
 
     // Make API call to refine the section
     const message = await anthropic.messages.create({
