@@ -44,9 +44,7 @@ export async function POST(request: NextRequest) {
     console.log(`Creating checkout session for device: ${deviceId}`);
 
     // Initialize Stripe
-    const stripe = new Stripe(stripeSecretKey, {
-      apiVersion: "2024-11-20.acacia",
-    });
+    const stripe = new Stripe(stripeSecretKey);
 
     // Create Stripe Checkout Session
     const session = await stripe.checkout.sessions.create({
