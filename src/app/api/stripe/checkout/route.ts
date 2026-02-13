@@ -6,7 +6,6 @@ export async function POST(request: NextRequest) {
     // Get environment variables
     const stripeSecretKey = process.env.STRIPE_SECRET_KEY;
     const stripePriceId = process.env.STRIPE_PRICE_ID_PRO;
-    const appBaseUrl = process.env.APP_BASE_URL;
 
     // Validate environment variables
     if (!stripeSecretKey) {
@@ -23,9 +22,20 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    if (!appBaseUrl) {
+    const base = (process.env.APP_BASE_URL || "").trim();
+
+    if (!base) {
       return NextResponse.json(
         { error: "Missing APP_BASE_URL" },
+        { status: 500 }
+      );
+    }
+
+    try {
+      new URL(base);
+    } catch {
+      return NextResponse.json(
+        { error: "Invalid APP_BASE_URL", base },
         { status: 500 }
       );
     }
@@ -43,6 +53,14 @@ export async function POST(request: NextRequest) {
 
     console.log(`Creating checkout session for device: ${deviceId}`);
 
+    // Build URLs safely
+    const successUrl = new URL("/app?checkout=success", base).toString();
+    const cancelUrl = new URL("/app?checkout=cancel", base).toString();
+
+    console.log("CHECKOUT_BASE", base);
+    console.log("CHECKOUT_SUCCESS_URL", successUrl);
+    console.log("CHECKOUT_CANCEL_URL", cancelUrl);
+
     // Initialize Stripe
     const stripe = new Stripe(stripeSecretKey);
 
@@ -56,8 +74,8 @@ export async function POST(request: NextRequest) {
           quantity: 1,
         },
       ],
-      success_url: `${appBaseUrl}/app?checkout=success`,
-      cancel_url: `${appBaseUrl}/app?checkout=cancel`,
+      success_url: successUrl,
+      cancel_url: cancelUrl,
       metadata: {
         deviceId,
       },
@@ -78,7 +96,7 @@ export async function POST(request: NextRequest) {
     console.error("STRIPE_CHECKOUT_ERROR", err);
     console.error(err?.stack);
     return NextResponse.json(
-      { error: String(err?.message || err) },
+      { error: "Stripe checkout failed", message: String(err?.message || err) },
       { status: 500 }
     );
   }
