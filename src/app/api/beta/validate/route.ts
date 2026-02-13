@@ -9,25 +9,34 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ ok: false }, { status: 401 });
     }
 
+    const masterCode = process.env.BETA_MASTER_CODE;
     const codesEnv = process.env.BETA_INVITE_CODES;
 
+    console.log("BETA_MASTER_CODE_PRESENT", Boolean(masterCode));
     console.log("BETA_INVITE_CODES_PRESENT", Boolean(codesEnv));
 
-    if (!codesEnv || !codesEnv.trim()) {
+    if (!masterCode && (!codesEnv || !codesEnv.trim())) {
       return NextResponse.json(
-        { ok: false, error: "Server misconfigured: missing BETA_INVITE_CODES" },
+        { ok: false, error: "Server misconfigured: missing BETA_INVITE_CODES and BETA_MASTER_CODE" },
         { status: 500 }
       );
     }
 
-    const validCodes = codesEnv.split(",").map((c) => c.trim().toUpperCase()).filter(Boolean);
-
-    console.log("BETA_INVITE_CODES_COUNT", validCodes.length);
-
     const normalizedInput = code.trim().toUpperCase();
 
-    if (validCodes.includes(normalizedInput)) {
+    // Check master code
+    if (masterCode && normalizedInput === masterCode.trim().toUpperCase()) {
       return NextResponse.json({ ok: true }, { status: 200 });
+    }
+
+    // Check invite codes
+    if (codesEnv) {
+      const validCodes = codesEnv.split(",").map((c) => c.trim().toUpperCase()).filter(Boolean);
+      console.log("BETA_INVITE_CODES_COUNT", validCodes.length);
+
+      if (validCodes.includes(normalizedInput)) {
+        return NextResponse.json({ ok: true }, { status: 200 });
+      }
     }
 
     return NextResponse.json({ ok: false }, { status: 401 });
