@@ -10,12 +10,20 @@ export async function POST(request: NextRequest) {
     }
 
     const codesEnv = process.env.BETA_INVITE_CODES;
-    if (!codesEnv) {
-      console.error("BETA_VALIDATE: BETA_INVITE_CODES not configured");
-      return NextResponse.json({ ok: false }, { status: 401 });
+
+    console.log("BETA_INVITE_CODES_PRESENT", Boolean(codesEnv));
+
+    if (!codesEnv || !codesEnv.trim()) {
+      return NextResponse.json(
+        { ok: false, error: "Server misconfigured: missing BETA_INVITE_CODES" },
+        { status: 500 }
+      );
     }
 
-    const validCodes = codesEnv.split(",").map((c) => c.trim().toUpperCase());
+    const validCodes = codesEnv.split(",").map((c) => c.trim().toUpperCase()).filter(Boolean);
+
+    console.log("BETA_INVITE_CODES_COUNT", validCodes.length);
+
     const normalizedInput = code.trim().toUpperCase();
 
     if (validCodes.includes(normalizedInput)) {
