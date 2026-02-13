@@ -36,7 +36,7 @@ export async function POST(request: NextRequest) {
 
     // Create body paragraphs (preserve line breaks)
     const bodyParagraphs = contentLines.map(
-      (line) =>
+      (line: string) =>
         new Paragraph({
           children: [
             new TextRun({
