@@ -60,11 +60,12 @@ export async function POST(request: NextRequest) {
       ],
     });
 
-    // Generate the DOCX file as a buffer
+    // Generate the DOCX file as a buffer and convert to Uint8Array
     const buffer = await Packer.toBuffer(doc);
+    const arrayBuffer = new Uint8Array(buffer);
 
     // Return the file as a download
-    return new NextResponse(buffer, {
+    return new NextResponse(arrayBuffer, {
       status: 200,
       headers: {
         "Content-Type":
