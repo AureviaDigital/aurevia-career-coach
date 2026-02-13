@@ -9,6 +9,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
 import { Loader2, Lock, Download, Clock, AlertCircle, Crown, CheckCircle, Copy, Check } from "lucide-react";
+import { track } from "@/lib/analytics";
 
 // Mock results data
 const MOCK_RESULTS = {
@@ -243,6 +244,8 @@ export default function AppPage() {
     }
     setDeviceId(storedDeviceId);
 
+    track("app_loaded");
+
     // Check beta access and validate stored code against server
     const storedAccess = localStorage.getItem(BETA_ACCESS_KEY);
     const storedCode = localStorage.getItem(BETA_CODE_KEY);
@@ -295,6 +298,7 @@ export default function AppPage() {
     const urlParams = new URLSearchParams(window.location.search);
     const checkoutStatus = urlParams.get("checkout");
     if (checkoutStatus === "success") {
+      track("pro_unlocked");
       setCheckoutMessage("🎉 Payment successful! Your Pro account is being activated...");
       // Remove checkout param from URL
       window.history.replaceState({}, "", "/app");
@@ -332,6 +336,7 @@ export default function AppPage() {
     if (!deviceId) return;
 
     setIsUpgrading(true);
+    track("upgrade_clicked");
 
     try {
       const response = await fetch("/api/stripe/checkout", {
@@ -407,6 +412,7 @@ export default function AppPage() {
     setAccessError("");
 
     const isValid = await validateBetaCode(normalizedInput);
+    track("beta_code_entered", { valid: isValid });
 
     if (isValid) {
       localStorage.setItem(BETA_ACCESS_KEY, "true");
@@ -439,6 +445,7 @@ export default function AppPage() {
 
     setIsLoading(true);
     setError(null);
+    track("generate_clicked");
 
     try {
       const response = await fetch("/api/generate", {
@@ -510,6 +517,7 @@ export default function AppPage() {
       ...prev,
       [outputType]: { ...prev[outputType], isLoading: true, error: null },
     }));
+    track("refine_clicked", { outputType });
 
     try {
       const response = await fetch("/api/refine", {
@@ -587,6 +595,7 @@ export default function AppPage() {
     const setLoading = isResume ? setIsDownloadingResume : setIsDownloadingCoverLetter;
 
     setLoading(true);
+    track("docx_export_clicked", { type });
 
     try {
       const response = await fetch("/api/export/docx", {
