@@ -22,7 +22,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const base = (process.env.APP_BASE_URL || "").trim();
+    const base = (process.env.APP_BASE_URL ?? "").trim();
 
     if (!base) {
       return NextResponse.json(
@@ -31,8 +31,11 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Validate and normalize the base URL
+    let origin: string;
     try {
-      new URL(base);
+      const baseUrl = new URL(base);
+      origin = baseUrl.origin;
     } catch {
       return NextResponse.json(
         { error: "Invalid APP_BASE_URL", base },
@@ -53,13 +56,14 @@ export async function POST(request: NextRequest) {
 
     console.log(`Creating checkout session for device: ${deviceId}`);
 
-    // Build URLs safely
-    const successUrl = new URL("/app?checkout=success", base).toString();
-    const cancelUrl = new URL("/app?checkout=cancel", base).toString();
+    // Build URLs from origin
+    const success_url = new URL("/app?checkout=success", origin).toString();
+    const cancel_url = new URL("/app?checkout=cancel", origin).toString();
 
-    console.log("CHECKOUT_BASE", base);
-    console.log("CHECKOUT_SUCCESS_URL", successUrl);
-    console.log("CHECKOUT_CANCEL_URL", cancelUrl);
+    console.log("APP_BASE_URL_RAW", process.env.APP_BASE_URL);
+    console.log("APP_BASE_URL_ORIGIN", origin);
+    console.log("SUCCESS_URL", success_url);
+    console.log("CANCEL_URL", cancel_url);
 
     // Initialize Stripe
     const stripe = new Stripe(stripeSecretKey);
@@ -74,8 +78,8 @@ export async function POST(request: NextRequest) {
           quantity: 1,
         },
       ],
-      success_url: successUrl,
-      cancel_url: cancelUrl,
+      success_url,
+      cancel_url,
       metadata: {
         deviceId,
       },
