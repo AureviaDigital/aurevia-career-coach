@@ -166,11 +166,20 @@ const DEVICE_ID_KEY = "aurevia_device_id";
 const MAX_GENERATIONS_PER_DAY = 5;
 const MAX_REFINEMENTS_PER_DAY = 10;
 
-// Helper function to get valid invite codes
-const getValidInviteCodes = (): string[] => {
-  const inviteCodesStr = process.env.NEXT_PUBLIC_BETA_INVITE_CODES;
-  if (!inviteCodesStr) return [];
-  return inviteCodesStr.split(",").map((code) => code.trim().toUpperCase());
+// Server-side beta code validation
+const validateBetaCode = async (code: string): Promise<boolean> => {
+  try {
+    const response = await fetch("/api/beta/validate", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ code }),
+    });
+    if (!response.ok) return false;
+    const data = await response.json();
+    return data.ok === true;
+  } catch {
+    return false;
+  }
 };
 
 export default function AppPage() {
@@ -234,24 +243,23 @@ export default function AppPage() {
     }
     setDeviceId(storedDeviceId);
 
-    // Check beta access and validate stored code
+    // Check beta access and validate stored code against server
     const storedAccess = localStorage.getItem(BETA_ACCESS_KEY);
     const storedCode = localStorage.getItem(BETA_CODE_KEY);
 
     if (storedAccess === "true" && storedCode) {
-      // Validate that the stored code is still in the valid list
-      const validCodes = getValidInviteCodes();
-      const normalizedStoredCode = storedCode.trim().toUpperCase();
-
-      if (validCodes.includes(normalizedStoredCode)) {
-        setHasAccess(true);
-      } else {
-        // Code has been revoked
-        setIsRevoked(true);
-        setHasAccess(false);
-      }
+      validateBetaCode(storedCode).then((valid) => {
+        if (valid) {
+          setHasAccess(true);
+        } else {
+          setIsRevoked(true);
+          setHasAccess(false);
+        }
+        setIsCheckingAccess(false);
+      });
+    } else {
+      setIsCheckingAccess(false);
     }
-    setIsCheckingAccess(false);
 
     // Load history
     const storedHistory = localStorage.getItem(HISTORY_KEY);
@@ -389,15 +397,18 @@ export default function AppPage() {
   const canGenerate = () => isPro || usage.generations < MAX_GENERATIONS_PER_DAY;
   const canRefine = () => isPro || usage.refinements < MAX_REFINEMENTS_PER_DAY;
 
-  const handleAccessSubmit = () => {
-    const validCodes = getValidInviteCodes();
-    const normalizedInput = accessCode.trim().toUpperCase();
+  const [isValidating, setIsValidating] = useState(false);
 
-    // Check if entered code is valid (case-insensitive, trimmed)
-    const isValid = validCodes.includes(normalizedInput);
+  const handleAccessSubmit = async () => {
+    const normalizedInput = accessCode.trim().toUpperCase();
+    if (!normalizedInput) return;
+
+    setIsValidating(true);
+    setAccessError("");
+
+    const isValid = await validateBetaCode(normalizedInput);
 
     if (isValid) {
-      // Store both the access flag and the code used
       localStorage.setItem(BETA_ACCESS_KEY, "true");
       localStorage.setItem(BETA_CODE_KEY, normalizedInput);
       setHasAccess(true);
@@ -406,6 +417,8 @@ export default function AppPage() {
     } else {
       setAccessError("Invalid access code. Please try again.");
     }
+
+    setIsValidating(false);
   };
 
   const handleLockApp = () => {
@@ -684,8 +697,15 @@ export default function AppPage() {
                 <p className="text-sm text-red-600">{accessError}</p>
               )}
             </div>
-            <Button onClick={handleAccessSubmit} className="w-full">
-              Enter
+            <Button onClick={handleAccessSubmit} disabled={isValidating} className="w-full">
+              {isValidating ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Validating...
+                </>
+              ) : (
+                "Enter"
+              )}
             </Button>
           </CardContent>
         </Card>
