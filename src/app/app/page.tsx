@@ -164,8 +164,8 @@ const HISTORY_KEY = "aurevia_history";
 const USAGE_KEY = "aurevia_usage";
 const DEVICE_ID_KEY = "aurevia_device_id";
 
-const MAX_GENERATIONS_PER_DAY = 5;
-const MAX_REFINEMENTS_PER_DAY = 10;
+const MAX_GENERATIONS_PER_DAY = 3;
+const MAX_REFINEMENTS_PER_DAY = 3;
 
 // Server-side beta code validation
 const validateBetaCode = async (code: string): Promise<boolean> => {
