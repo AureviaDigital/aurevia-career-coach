@@ -6,9 +6,9 @@ import "./globals.css";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Aurevia Career Coach - AI-Powered Career Development",
+  title: "Aurevia Career Coach - AI Resume Optimization",
   description:
-    "Your AI-powered career development companion. Get personalized guidance, resume optimization, and interview preparation.",
+    "Tailor your resume to any job post in minutes. Paste your resume and the job description to get a cleaner, more relevant version instantly.",
 };
 
 export default function RootLayout({
