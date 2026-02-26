@@ -595,7 +595,7 @@ export default function AppPage() {
     const setLoading = isResume ? setIsDownloadingResume : setIsDownloadingCoverLetter;
 
     setLoading(true);
-    track("docx_export_clicked", { type });
+    track("docx_export_clicked", { type, isPro });
 
     try {
       const response = await fetch("/api/export/docx", {
@@ -607,10 +607,16 @@ export default function AppPage() {
           filename: isResume ? "Optimized_Resume" : "Cover_Letter",
           title: isResume ? "Optimized Resume" : "Cover Letter",
           content: isResume ? results.optimizedResume : results.coverLetter,
+          deviceId,
         }),
       });
 
       if (!response.ok) {
+        const data = await response.json().catch(() => ({}));
+        if (response.status === 403 && data.error === "pro_required") {
+          setError("DOCX export is a Pro feature. Upgrade to export your documents!");
+          return;
+        }
         throw new Error("Failed to generate document");
       }
 
@@ -1251,18 +1257,25 @@ export default function AppPage() {
                             <Button
                               variant="outline"
                               size="sm"
-                              onClick={() => handleDownload("resume")}
+                              onClick={() => isPro ? handleDownload("resume") : handleUpgradeToPro()}
                               disabled={isDownloadingResume}
+                              title={isPro ? "Download as DOCX" : "Upgrade to Pro to export DOCX"}
                             >
                               {isDownloadingResume ? (
                                 <>
                                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                                   Downloading...
                                 </>
-                              ) : (
+                              ) : isPro ? (
                                 <>
                                   <Download className="mr-2 h-4 w-4" />
                                   Download (.docx)
+                                </>
+                              ) : (
+                                <>
+                                  <Lock className="mr-2 h-4 w-4" />
+                                  Download (.docx)
+                                  <Crown className="ml-1 h-3 w-3 text-amber-500" />
                                 </>
                               )}
                             </Button>
@@ -1322,18 +1335,25 @@ export default function AppPage() {
                             <Button
                               variant="outline"
                               size="sm"
-                              onClick={() => handleDownload("coverLetter")}
+                              onClick={() => isPro ? handleDownload("coverLetter") : handleUpgradeToPro()}
                               disabled={isDownloadingCoverLetter}
+                              title={isPro ? "Download as DOCX" : "Upgrade to Pro to export DOCX"}
                             >
                               {isDownloadingCoverLetter ? (
                                 <>
                                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                                   Downloading...
                                 </>
-                              ) : (
+                              ) : isPro ? (
                                 <>
                                   <Download className="mr-2 h-4 w-4" />
                                   Download (.docx)
+                                </>
+                              ) : (
+                                <>
+                                  <Lock className="mr-2 h-4 w-4" />
+                                  Download (.docx)
+                                  <Crown className="ml-1 h-3 w-3 text-amber-500" />
                                 </>
                               )}
                             </Button>

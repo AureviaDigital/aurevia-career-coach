@@ -1,16 +1,25 @@
 import { NextRequest, NextResponse } from "next/server";
 import { Document, Packer, Paragraph, TextRun, AlignmentType } from "docx";
+import { getProStatus } from "@/lib/proStore";
 
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { filename, title, content } = body;
+    const { filename, title, content, deviceId } = body;
 
     // Validate required fields
     if (!filename || !title || !content) {
       return NextResponse.json(
         { error: "filename, title, and content are required" },
         { status: 400 }
+      );
+    }
+
+    // Pro-only gate: DOCX export requires Pro
+    if (!deviceId || !getProStatus(deviceId)) {
+      return NextResponse.json(
+        { error: "pro_required", message: "DOCX export is a Pro feature." },
+        { status: 403 }
       );
     }
 
