@@ -771,17 +771,12 @@ export default function AppPage() {
             >
               History
             </button>
-            <button
-              onClick={() => setCurrentView("interview")}
-              className={`block w-full rounded-lg px-4 py-2 text-left text-sm font-medium ${
-                currentView === "interview"
-                  ? "bg-slate-100 text-slate-900"
-                  : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
-              }`}
+            <div
+              className="block w-full rounded-lg px-4 py-2 text-left text-sm font-medium text-slate-400 opacity-50 cursor-not-allowed"
             >
               Interview Coach
-              <span className="ml-2 text-xs text-slate-400">(Coming Soon)</span>
-            </button>
+              <span className="ml-2 text-xs">(Coming Soon)</span>
+            </div>
             <button
               onClick={() => setCurrentView("settings")}
               className={`block w-full rounded-lg px-4 py-2 text-left text-sm font-medium ${
