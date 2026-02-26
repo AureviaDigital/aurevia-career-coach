@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { Button } from "@/components/ui/button";
 
 export default function Home() {
@@ -23,6 +24,19 @@ export default function Home() {
               Learn More
             </Button>
           </Link>
+        </div>
+
+        <div className="mt-16 flex justify-center">
+          <div className="w-full max-w-[1100px]">
+            <Image
+              src="/app-preview.png"
+              alt="Aurevia Career Coach app preview"
+              width={1100}
+              height={700}
+              className="w-full rounded-2xl shadow-2xl -rotate-2"
+              priority
+            />
+          </div>
         </div>
 
         <div id="features" className="mt-20 grid gap-8 sm:grid-cols-3">
