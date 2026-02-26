@@ -8,7 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
-import { Loader2, Lock, Download, Clock, AlertCircle, Crown, CheckCircle, Copy, Check } from "lucide-react";
+import { Loader2, Lock, Download, Clock, AlertCircle, Crown, CheckCircle } from "lucide-react";
 import { track } from "@/lib/analytics";
 
 // Mock results data
@@ -202,7 +202,6 @@ export default function AppPage() {
   const [checkoutMessage, setCheckoutMessage] = useState<string | null>(null);
 
   // Copy state for interview page
-  const [copied, setCopied] = useState(false);
 
   // Existing state
   const [resume, setResume] = useState("");
@@ -362,13 +361,6 @@ export default function AppPage() {
       alert("Failed to start checkout. Please try again.");
       setIsUpgrading(false);
     }
-  };
-
-  const handleCopyRequest = () => {
-    const message = "I'd like to request the Interview Coach feature for Aurevia Career Coach!";
-    navigator.clipboard.writeText(message);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
   };
 
   const saveHistory = (newItem: HistoryItem) => {
@@ -883,81 +875,8 @@ export default function AppPage() {
 
           {/* Interview Coach View */}
           {currentView === "interview" && (
-            <div className="space-y-6">
-              <Card>
-                <CardHeader>
-                  <CardTitle className="text-2xl">
-                    Interview Coach (Coming Soon)
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-6">
-                  <p className="text-slate-600">
-                    Practice and ace your interviews with AI-powered coaching.
-                  </p>
-
-                  <div className="space-y-3">
-                    <h3 className="font-semibold text-slate-900">
-                      What Interview Coach will include:
-                    </h3>
-                    <ul className="space-y-2 text-slate-700">
-                      <li className="flex items-start gap-2">
-                        <span className="text-blue-600 mt-1">•</span>
-                        <span>
-                          <strong>Mock Interviews:</strong> Practice with realistic
-                          interview simulations tailored to your target role
-                        </span>
-                      </li>
-                      <li className="flex items-start gap-2">
-                        <span className="text-blue-600 mt-1">•</span>
-                        <span>
-                          <strong>Real-time Scoring:</strong> Get instant feedback on
-                          your answers with detailed performance metrics
-                        </span>
-                      </li>
-                      <li className="flex items-start gap-2">
-                        <span className="text-blue-600 mt-1">•</span>
-                        <span>
-                          <strong>Personalized Feedback:</strong> Receive AI-powered
-                          suggestions to improve your interview technique
-                        </span>
-                      </li>
-                      <li className="flex items-start gap-2">
-                        <span className="text-blue-600 mt-1">•</span>
-                        <span>
-                          <strong>Question Bank:</strong> Access hundreds of common
-                          interview questions for your industry
-                        </span>
-                      </li>
-                      <li className="flex items-start gap-2">
-                        <span className="text-blue-600 mt-1">•</span>
-                        <span>
-                          <strong>Progress Tracking:</strong> Monitor your improvement
-                          over time with detailed analytics
-                        </span>
-                      </li>
-                    </ul>
-                  </div>
-
-                  <div className="pt-4">
-                    <Button onClick={handleCopyRequest} className="gap-2">
-                      {copied ? (
-                        <>
-                          <Check className="h-4 w-4" />
-                          Copied!
-                        </>
-                      ) : (
-                        <>
-                          <Copy className="h-4 w-4" />
-                          Request this feature
-                        </>
-                      )}
-                    </Button>
-                    <p className="text-sm text-slate-500 mt-2">
-                      Click to copy a feature request message to your clipboard
-                    </p>
-                  </div>
-                </CardContent>
-              </Card>
+            <div className="flex items-center justify-center h-64">
+              <p className="text-slate-400 text-sm">Coming soon.</p>
             </div>
           )}
 
