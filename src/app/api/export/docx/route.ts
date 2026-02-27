@@ -16,7 +16,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Pro-only gate: DOCX export requires Pro
-    if (!deviceId || !getProStatus(deviceId)) {
+    if (!deviceId || !(await getProStatus(deviceId))) {
       return NextResponse.json(
         { error: "pro_required", message: "DOCX export is a Pro feature." },
         { status: 403 }

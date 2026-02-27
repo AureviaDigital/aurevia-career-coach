@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import Stripe from "stripe";
-import { activatePro, deactivatePro } from "@/lib/proStore";
+import { activatePro, deactivatePro, setCustomerId } from "@/lib/proStore";
 
 // Initialize Stripe
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
@@ -47,10 +47,14 @@ export async function POST(request: NextRequest) {
       case "checkout.session.completed": {
         const session = event.data.object as Stripe.Checkout.Session;
         const deviceId = session.metadata?.deviceId;
+        const customerId = typeof session.customer === "string" ? session.customer : session.customer?.id;
 
         if (deviceId) {
           console.log("PRO_UNLOCKED", deviceId, "(checkout.session.completed)");
-          activatePro(deviceId);
+          await activatePro(deviceId);
+          if (customerId) {
+            await setCustomerId(deviceId, customerId);
+          }
         } else {
           console.warn("WEBHOOK_WARNING: No deviceId in session metadata");
         }
@@ -60,10 +64,14 @@ export async function POST(request: NextRequest) {
       case "customer.subscription.created": {
         const subscription = event.data.object as Stripe.Subscription;
         const deviceId = subscription.metadata?.deviceId;
+        const customerId = typeof subscription.customer === "string" ? subscription.customer : subscription.customer?.id;
 
         if (deviceId) {
           console.log("PRO_UNLOCKED", deviceId, "(customer.subscription.created)");
-          activatePro(deviceId);
+          await activatePro(deviceId);
+          if (customerId) {
+            await setCustomerId(deviceId, customerId);
+          }
         } else {
           console.warn("WEBHOOK_WARNING: No deviceId in subscription metadata");
         }
@@ -78,10 +86,10 @@ export async function POST(request: NextRequest) {
           // Check if subscription is active or canceled
           if (subscription.status === "active") {
             console.log("PRO_UNLOCKED", deviceId, "(customer.subscription.updated - active)");
-            activatePro(deviceId);
+            await activatePro(deviceId);
           } else if (subscription.status === "canceled" || subscription.status === "unpaid") {
             console.log("PRO_LOCKED", deviceId, "(customer.subscription.updated - inactive)");
-            deactivatePro(deviceId);
+            await deactivatePro(deviceId);
           }
         } else {
           console.warn("WEBHOOK_WARNING: No deviceId in subscription metadata");
@@ -95,7 +103,7 @@ export async function POST(request: NextRequest) {
 
         if (deviceId) {
           console.log("PRO_LOCKED", deviceId, "(customer.subscription.deleted)");
-          deactivatePro(deviceId);
+          await deactivatePro(deviceId);
         } else {
           console.warn("WEBHOOK_WARNING: No deviceId in subscription metadata");
         }

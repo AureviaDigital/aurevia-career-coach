@@ -14,7 +14,7 @@ export async function GET(request: NextRequest) {
     }
 
     // Get Pro status from store
-    const isPro = getProStatus(deviceId);
+    const isPro = await getProStatus(deviceId);
 
     console.log(`Pro status check for device ${deviceId}: ${isPro}`);
 

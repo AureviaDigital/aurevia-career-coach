@@ -941,11 +941,40 @@ export default function AppPage() {
                     <h3 className="font-semibold text-slate-900">Subscription</h3>
                     {isPro ? (
                       <div>
-                        <Button variant="outline" disabled>
+                        <Button
+                          variant="outline"
+                          onClick={async () => {
+                            if (!deviceId) {
+                              setError("Device ID not available. Please refresh and try again.");
+                              return;
+                            }
+                            try {
+                              const res = await fetch("/api/stripe/portal", {
+                                method: "POST",
+                                headers: { "Content-Type": "application/json" },
+                                body: JSON.stringify({ deviceId }),
+                              });
+                              const data = await res.json();
+                              if (!res.ok) {
+                                if (res.status === 404 && data.error === "customer_not_found") {
+                                  setError("Billing portal not available yet. Please contact hello@aureviadigital.com");
+                                  return;
+                                }
+                                throw new Error(data.message || "Failed to open portal");
+                              }
+                              if (data.url) {
+                                window.location.href = data.url;
+                              }
+                            } catch (err) {
+                              console.error("Portal error:", err);
+                              setError("Failed to open billing portal. Please try again.");
+                            }
+                          }}
+                        >
                           Manage Subscription
                         </Button>
                         <p className="text-sm text-slate-500 mt-2">
-                          Stripe Customer Portal integration coming soon
+                          View invoices, update payment method, or cancel
                         </p>
                       </div>
                     ) : (
