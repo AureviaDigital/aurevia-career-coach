@@ -69,7 +69,7 @@ export async function getProStatus(deviceId: string): Promise<boolean> {
   if (isProduction()) {
     try {
       const val = await getRedis().get(`pro:${deviceId}`);
-      return val === "1";
+      return val != null && String(val) === "1";
     } catch (error) {
       console.error("Redis getProStatus error:", error);
       return false;
