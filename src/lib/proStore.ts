@@ -102,13 +102,23 @@ export async function setProStatus(deviceId: string, isPro: boolean) {
 
 // Activate Pro for a device (called after successful payment)
 export async function activatePro(deviceId: string) {
+  const key = `pro:${deviceId}`;
   await setProStatus(deviceId, true);
+  if (isProduction()) {
+    const readBack = await getRedis().get(key);
+    console.log(`[activatePro] deviceId=${deviceId} key=${key} readBack=${readBack}`);
+  }
   console.log(`Pro activated for device: ${deviceId}`);
 }
 
 // Deactivate Pro for a device (for cancellations)
 export async function deactivatePro(deviceId: string) {
+  const key = `pro:${deviceId}`;
   await setProStatus(deviceId, false);
+  if (isProduction()) {
+    const readBack = await getRedis().get(key);
+    console.log(`[deactivatePro] deviceId=${deviceId} key=${key} readBack=${readBack}`);
+  }
   console.log(`Pro deactivated for device: ${deviceId}`);
 }
 
