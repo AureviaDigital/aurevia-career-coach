@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { Redis } from "@upstash/redis";
 
 let redis: Redis | null = null;
@@ -12,9 +12,16 @@ function getRedis(): Redis {
   return redis;
 }
 
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
     const r = getRedis();
+    const key = request.nextUrl.searchParams.get("key");
+
+    if (key) {
+      const val = await r.get(key);
+      return NextResponse.json({ ok: true, key, val });
+    }
+
     await r.set("debug:ping", "1");
     const val = await r.get("debug:ping");
     return NextResponse.json({ ok: true, val });
