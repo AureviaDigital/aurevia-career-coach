@@ -167,6 +167,8 @@ const DEVICE_ID_KEY = "aurevia_device_id";
 const MAX_GENERATIONS_PER_DAY = 3;
 const MAX_REFINEMENTS_PER_DAY = 3;
 
+const OPEN_ACCESS = process.env.NEXT_PUBLIC_OPEN_ACCESS === "true";
+
 // Server-side beta code validation
 const validateBetaCode = async (code: string): Promise<boolean> => {
   try {
@@ -245,22 +247,28 @@ export default function AppPage() {
 
     track("app_loaded");
 
-    // Check beta access and validate stored code against server
-    const storedAccess = localStorage.getItem(BETA_ACCESS_KEY);
-    const storedCode = localStorage.getItem(BETA_CODE_KEY);
-
-    if (storedAccess === "true" && storedCode) {
-      validateBetaCode(storedCode).then((valid) => {
-        if (valid) {
-          setHasAccess(true);
-        } else {
-          setIsRevoked(true);
-          setHasAccess(false);
-        }
-        setIsCheckingAccess(false);
-      });
-    } else {
+    // Open access: bypass beta gate entirely
+    if (OPEN_ACCESS) {
+      setHasAccess(true);
       setIsCheckingAccess(false);
+    } else {
+      // Check beta access and validate stored code against server
+      const storedAccess = localStorage.getItem(BETA_ACCESS_KEY);
+      const storedCode = localStorage.getItem(BETA_CODE_KEY);
+
+      if (storedAccess === "true" && storedCode) {
+        validateBetaCode(storedCode).then((valid) => {
+          if (valid) {
+            setHasAccess(true);
+          } else {
+            setIsRevoked(true);
+            setHasAccess(false);
+          }
+          setIsCheckingAccess(false);
+        });
+      } else {
+        setIsCheckingAccess(false);
+      }
     }
 
     // Load history
@@ -634,8 +642,8 @@ export default function AppPage() {
     }
   };
 
-  // Show loading state while checking access
-  if (isCheckingAccess) {
+  // Show loading state while checking access (skip if open access)
+  if (!OPEN_ACCESS && isCheckingAccess) {
     return (
       <div className="flex h-screen items-center justify-center bg-slate-50">
         <Loader2 className="h-8 w-8 animate-spin text-slate-400" />
@@ -643,8 +651,8 @@ export default function AppPage() {
     );
   }
 
-  // Show revoked access message if code is no longer valid
-  if (isRevoked) {
+  // Show revoked access message if code is no longer valid (skip if open access)
+  if (!OPEN_ACCESS && isRevoked) {
     return (
       <div className="flex h-screen items-center justify-center bg-slate-50">
         <Card className="w-full max-w-md">
@@ -673,8 +681,8 @@ export default function AppPage() {
     );
   }
 
-  // Show beta access gate if no access
-  if (!hasAccess) {
+  // Show beta access gate if no access (skip if open access)
+  if (!OPEN_ACCESS && !hasAccess) {
     return (
       <div className="flex h-screen items-center justify-center bg-slate-50">
         <Card className="w-full max-w-md">
