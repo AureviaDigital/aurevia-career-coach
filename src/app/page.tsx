@@ -26,6 +26,10 @@ export default function Home() {
           </Link>
         </div>
 
+        <p className="mt-6 text-sm text-slate-500">
+          No account required. Your content is processed to generate results and may be stored to provide history and Pro features.
+        </p>
+
         <div className="mt-16 flex justify-center">
           <div className="w-full max-w-[1100px]">
             <Image

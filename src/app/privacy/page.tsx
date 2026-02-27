@@ -2,77 +2,69 @@ import Link from "next/link";
 
 export default function PrivacyPage() {
   return (
-    <div className="min-h-screen bg-slate-50 py-12">
-      <div className="container mx-auto max-w-4xl px-4">
-        <Link
-          href="/"
-          className="mb-8 inline-block text-sm text-slate-600 hover:text-slate-900"
-        >
-          ← Back to Home
-        </Link>
-
-        <h1 className="mb-8 text-4xl font-bold text-slate-900">
+    <div className="min-h-screen bg-slate-50 py-16">
+      <div className="container mx-auto max-w-3xl px-4">
+        <h1 className="mb-8 text-4xl font-bold tracking-tight text-slate-900">
           Privacy Policy
         </h1>
 
-        <div className="space-y-6 rounded-lg bg-white p-8 shadow-md">
-          <section>
-            <h2 className="mb-3 text-2xl font-semibold text-slate-900">
-              1. Information We Collect
-            </h2>
-            <p className="text-slate-600">
-              We collect information you provide directly to us, including when
-              you create an account, use our career coaching services, or
-              communicate with us.
-            </p>
-          </section>
+        <p className="mb-8 text-slate-600">
+          Aurevia Career Coach provides resume tailoring tools.
+        </p>
 
-          <section>
-            <h2 className="mb-3 text-2xl font-semibold text-slate-900">
-              2. How We Use Your Information
-            </h2>
-            <p className="text-slate-600">
-              We use the information we collect to provide, maintain, and
-              improve our services, to develop new features, and to protect
-              Aurevia and our users.
-            </p>
-          </section>
+        <h2 className="mb-3 text-2xl font-semibold text-slate-900">
+          Information You Provide
+        </h2>
+        <p className="mb-2 text-slate-600">
+          When you use the app, you may provide:
+        </p>
+        <ul className="mb-4 list-disc pl-6 space-y-1 text-slate-600">
+          <li>Resume content</li>
+          <li>Job descriptions</li>
+        </ul>
+        <p className="mb-8 text-slate-600">
+          This content may be stored to provide history functionality and Pro
+          features.
+        </p>
 
-          <section>
-            <h2 className="mb-3 text-2xl font-semibold text-slate-900">
-              3. Information Sharing
-            </h2>
-            <p className="text-slate-600">
-              We do not share your personal information with third parties
-              except as described in this policy or with your consent.
-            </p>
-          </section>
+        <h2 className="mb-3 text-2xl font-semibold text-slate-900">
+          Payments
+        </h2>
+        <p className="mb-8 text-slate-600">
+          Payments are processed securely by Stripe. We do not store your credit
+          card information.
+        </p>
 
-          <section>
-            <h2 className="mb-3 text-2xl font-semibold text-slate-900">
-              4. Data Security
-            </h2>
-            <p className="text-slate-600">
-              We take reasonable measures to help protect your personal
-              information from loss, theft, misuse, unauthorized access, and
-              disclosure.
-            </p>
-          </section>
+        <h2 className="mb-3 text-2xl font-semibold text-slate-900">
+          Data Usage
+        </h2>
+        <p className="mb-8 text-slate-600">
+          Content you provide is used solely to generate resume outputs and
+          operate the application.
+        </p>
 
-          <section>
-            <h2 className="mb-3 text-2xl font-semibold text-slate-900">
-              5. Contact Us
-            </h2>
-            <p className="text-slate-600">
-              If you have any questions about this Privacy Policy, please
-              contact us at privacy@aurevia.com
-            </p>
-          </section>
+        <h2 className="mb-3 text-2xl font-semibold text-slate-900">
+          No Account Required
+        </h2>
+        <p className="mb-8 text-slate-600">
+          The app does not require user accounts. Access and Pro status are
+          associated with your device.
+        </p>
 
-          <p className="text-sm text-slate-500">
-            Last updated: {new Date().toLocaleDateString()}
-          </p>
-        </div>
+        <h2 className="mb-3 text-2xl font-semibold text-slate-900">Contact</h2>
+        <p className="mb-12 text-slate-600">
+          For questions about this policy, contact:{" "}
+          <a
+            href="mailto:hello@aureviadigital.com"
+            className="text-slate-900 underline hover:text-slate-700"
+          >
+            hello@aureviadigital.com
+          </a>
+        </p>
+
+        <Link href="/" className="text-sm text-slate-500 hover:text-slate-700">
+          &larr; Back to home
+        </Link>
       </div>
     </div>
   );
