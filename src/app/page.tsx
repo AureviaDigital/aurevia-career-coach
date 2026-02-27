@@ -1,6 +1,9 @@
+"use client";
+
 import Link from "next/link";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
+import { track } from "@/lib/analytics";
 
 export default function Home() {
   return (
@@ -14,7 +17,7 @@ export default function Home() {
           relevant version instantly.
         </p>
         <div className="flex flex-col items-center justify-center gap-4 sm:flex-row">
-          <Link href="/app">
+          <Link href="/app" onClick={() => track("landing_cta_clicked", { cta: "get_started" })}>
             <Button size="lg" className="text-lg">
               Get Started
             </Button>
@@ -31,7 +34,7 @@ export default function Home() {
         </p>
 
         <div className="mt-16 flex justify-center">
-          <Link href="/app" className="w-full max-w-[1100px]">
+          <Link href="/app" className="w-full max-w-[1100px]" onClick={() => track("landing_cta_clicked", { cta: "preview_image" })}>
             <Image
               src="/app-preview.png"
               alt="Aurevia Career Coach app preview"
