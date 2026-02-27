@@ -31,7 +31,7 @@ export default function Home() {
         </p>
 
         <div className="mt-16 flex justify-center">
-          <div className="w-full max-w-[1100px]">
+          <Link href="/app" className="w-full max-w-[1100px]">
             <Image
               src="/app-preview.png"
               alt="Aurevia Career Coach app preview"
@@ -40,7 +40,7 @@ export default function Home() {
               className="w-full rounded-2xl shadow-2xl -rotate-2"
               priority
             />
-          </div>
+          </Link>
         </div>
 
         <div id="features" className="mt-20 grid gap-8 sm:grid-cols-3">
